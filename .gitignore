@@ -32,3 +32,5 @@ coverage/
 *.log
 
 node_modules
+
+.npmrc
