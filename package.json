@@ -1,0 +1,40 @@
+{
+  "name": "pageindex-js",
+  "version": "0.0.1",
+  "main": "dist/cjs/index.js",
+  "module": "dist/esm/index.js",
+  "types": "dist/esm/index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/twoojoo/pageindex-js.git"
+  },
+  "exports": {
+    ".": {
+      "require": "./dist/cjs/index.js",
+      "import": "./dist/esm/index.js"
+    }
+  },
+  "scripts": {
+    "build:esm": "tsc -p tsconfig.json",
+    "build:cjs": "tsc -p tsconfig.cjs.json",
+    "build": "npm run clean && npm run build:esm && npm run build:cjs",
+    "clean": "rm -rf dist"
+  },
+  "keywords": [
+    "PageIndex",
+    "Agent",
+    "Search",
+    "PDF"
+  ],
+  "author": "twoojoo",
+  "license": "ISC",
+  "description": "A Javascript/Typescript client for PageIndex",
+  "dependencies": {
+    "form-data": "^4.0.5",
+    "openai": "^6.9.1"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "typescript": "^5.9.3"
+  }
+}
