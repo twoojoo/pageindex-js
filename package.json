@@ -1,6 +1,15 @@
 {
   "name": "pageindex-js",
+  "description": "A Javascript/Typescript client for PageIndex",
   "version": "0.0.1",
+  "author": "twoojoo",
+  "license": "MIT",
+  "keywords": [
+    "PageIndex",
+    "Agent",
+    "Search",
+    "PDF"
+  ],
   "main": "dist/cjs/index.js",
   "module": "dist/esm/index.js",
   "types": "dist/esm/index.d.ts",
@@ -20,15 +29,6 @@
     "build": "npm run clean && npm run build:esm && npm run build:cjs",
     "clean": "rm -rf dist"
   },
-  "keywords": [
-    "PageIndex",
-    "Agent",
-    "Search",
-    "PDF"
-  ],
-  "author": "twoojoo",
-  "license": "ISC",
-  "description": "A Javascript/Typescript client for PageIndex",
   "dependencies": {
     "form-data": "^4.0.5",
     "openai": "^6.9.1"
