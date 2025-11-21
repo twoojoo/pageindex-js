@@ -108,6 +108,30 @@ export class PageIndexClient {
         }
     }
 
+    async submitDocumentBuffer(filename: string, file: Buffer): Promise<SubmitDocumentResponse> {
+        if (!filename.endsWith(".pdf")) throw new PageIndexAPIError("Only PDF files are supported.")
+
+        const formData = new FormData();
+
+        formData.append("file", file, { filename });
+        formData.append("if_retrieval", "True");
+
+        try {
+            const response = await axios.post(`${PageIndexClient.BASE_URL}/doc/`, formData, {
+                headers: {
+                    ...this.headers(),
+                    ...formData.getHeaders(),
+                },
+                maxBodyLength: Infinity,
+            });
+
+            return response.data;
+        } catch (err: any) {
+            const message = err.response?.data || err.message;
+            throw new PageIndexAPIError(`Failed to submit document: ${JSON.stringify(message)}`);
+        }
+    }
+
     /* ---------- OCR ---------- */
 
     async getOCR(docId: string, format: "page" | "node" = "page"): Promise<OCRResponse> {
