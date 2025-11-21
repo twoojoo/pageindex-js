@@ -1,8 +1,9 @@
-*.ts
-*.pdf
+src
 .gitignore
 .env
 node_modules
 .npmrc
 tsconfig.json
 tsconfig.cjs.json
+test.pdf
+test.ts
