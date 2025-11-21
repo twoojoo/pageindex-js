@@ -1,7 +1,7 @@
 {
   "name": "pageindex-js",
   "description": "A Javascript/Typescript client for PageIndex",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "twoojoo",
   "license": "MIT",
   "keywords": [
