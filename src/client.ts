@@ -1,4 +1,6 @@
-// pageindex-client.ts
+import FormData from "form-data";
+import axios from "axios";
+import fs from "node:fs"
 
 export class PageIndexAPIError extends Error { }
 
@@ -83,26 +85,27 @@ export class PageIndexClient {
     /* ---------- DOCUMENT SUBMISSION ---------- */
 
     async submitDocument(filePath: string): Promise<SubmitDocumentResponse> {
-        const fs = await import("node:fs");
-        const file = fs.createReadStream(filePath);
+        const formData = new FormData();
+        const filename = filePath.split("/").pop() || "document.pdf";
 
-        const formData = new (await import("form-data")).default();
-        formData.append("file", file);
+        const fileStream = fs.createReadStream(filePath);
+        formData.append("file", fileStream, { filename });
         formData.append("if_retrieval", "True");
 
-        const response = await fetch(`${PageIndexClient.BASE_URL}/doc/`, {
-            method: "POST",
-            headers: this.headers(formData.getHeaders()),
-            body: formData as any,
-        });
+        try {
+            const response = await axios.post(`${PageIndexClient.BASE_URL}/doc/`, formData, {
+                headers: {
+                    ...this.headers(),
+                    ...formData.getHeaders(),
+                },
+                maxBodyLength: Infinity,
+            });
 
-        if (!response.ok) {
-            throw new PageIndexAPIError(
-                `Failed to submit document: ${await response.text()}`
-            );
+            return response.data;
+        } catch (err: any) {
+            const message = err.response?.data || err.message;
+            throw new PageIndexAPIError(`Failed to submit document: ${JSON.stringify(message)}`);
         }
-
-        return response.json();
     }
 
     /* ---------- OCR ---------- */
@@ -177,21 +180,27 @@ export class PageIndexClient {
 
     /* ---------- CHAT COMPLETIONS ---------- */
 
-    async chatCompletions(params: {
+    async chatCompletions<S extends boolean = false, M extends boolean = false>(params: {
         messages: Message[];
-        stream?: boolean;
+        stream?: S;
         doc_id?: string | string[] | null;
         temperature?: number | null;
-        stream_metadata?: boolean;
-    }): Promise<
-        | ChatCompletionResponse
-        | AsyncGenerator<string>
-        | AsyncGenerator<StreamChunk>
+        stream_metadata?: M;
+    }): Promise<S extends true
+        ? M extends true
+        ? AsyncGenerator<StreamChunk>
+        : AsyncGenerator<string>
+        : ChatCompletionResponse
     > {
-        const { messages, stream = false, doc_id, temperature, stream_metadata = false } = params;
+        const { messages, stream = false, temperature = null, stream_metadata } = params;
+        let { doc_id = null } = params
 
-        const payload: Record<string, any> = { messages, stream };
-        if (doc_id != null) payload.doc_id = doc_id;
+        // TODO no limit
+        if (!doc_id) {
+            doc_id = (await this.listDocuments()).documents.map(d => d.id) || []
+        }
+
+        const payload: Record<string, any> = { messages, stream, doc_id };
         if (temperature != null) payload.temperature = temperature;
 
         const res = await fetch(`${PageIndexClient.BASE_URL}/chat/completions/`, {
@@ -209,9 +218,10 @@ export class PageIndexClient {
         }
 
         const reader = res.body!.getReader();
+
         return stream_metadata
-            ? this.streamRaw(reader)
-            : this.streamText(reader);
+            ? this.streamRaw(reader) as any
+            : this.streamText(reader) as any
     }
 
     private async *streamText(reader: ReadableStreamDefaultReader<Uint8Array>): AsyncGenerator<string> {

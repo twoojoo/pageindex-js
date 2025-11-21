@@ -34,3 +34,5 @@ coverage/
 node_modules
 
 .npmrc
+test.ts
+test.pdf

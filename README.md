@@ -113,14 +113,14 @@ const messages = [
   { role: 'user', content: 'Summarize the document.' }
 ];
 
-const completion = await client.chatCompletions(messages, false, 'doc_id_here');
+const completion = await client.chatCompletions({messages: [], stream: false, doc_id: 'doc_id_here'});
 console.log(completion);
 ```
 
 Streaming responses:
 
 ```ts
-for await (const chunk of client.chatCompletions(messages, true, 'doc_id_here')) {
+for await (const chunk of client.chatCompletions({messages: [], stream: true, doc_id: 'doc_id_here'})) {
   console.log(chunk);
 }
 ```
