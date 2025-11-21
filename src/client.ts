@@ -1,6 +1,7 @@
 import FormData from "form-data";
 import axios from "axios";
 import fs from "node:fs"
+import { TreeNode } from "./types";
 
 export class PageIndexAPIError extends Error { }
 
@@ -29,7 +30,10 @@ export interface OCRResponse {
 }
 
 export interface TreeResponse {
+    doc_id?: string,
+    status?: string,
     retrieval_ready?: boolean;
+    result?: TreeNode[]
     [key: string]: any;
 }
 
