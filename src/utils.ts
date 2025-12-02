@@ -1,5 +1,5 @@
 // utils.ts — remove_fields, print_wrapped, print_tree, create_node_mapping
-import { TreeNode, NodeMapping, PageRangeInfo } from "./types";
+import { TreeNode, NodeMapping, PageRangeInfo } from "./types.js";
 import util from "node:util";
 
 export function removeFields(

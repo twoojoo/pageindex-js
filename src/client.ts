@@ -1,7 +1,7 @@
 import FormData from "form-data";
 import axios from "axios";
 import fs from "node:fs"
-import { TreeNode } from "./types";
+import { TreeNode } from "./types.js";
 
 export class PageIndexAPIError extends Error { }
 
